@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Craftoria - Главная</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Nunito', sans-serif; }
+body { background: url('hero-bg.jpg') no-repeat center center fixed; background-size: cover; color:#eee; overflow-x:hidden; }
+a { text-decoration:none; }
+header { display:flex; justify-content:space-between; align-items:center; padding:20px 50px; position:fixed; width:100%; background:rgba(0,0,0,0.5); z-index:1000; }
+header .logo { font-size:28px; font-weight:bold; color:#fff; }
+header nav ul { list-style:none; display:flex; }
+header nav ul li { margin-left:20px; }
+header nav ul li a { font-weight:600; color:#fff; }
+#hero { padding:200px 50px 150px 50px; text-align:center; }
+.hero-content { opacity:0; transform: translateY(50px); transition: all 1s ease; }
+#hero h1 { font-size:50px; margin-bottom:20px; color:#fff; text-shadow:2px 2px 10px #000; }
+#hero p { font-size:20px; margin-bottom:30px; color:#fff; text-shadow:1px 1px 5px #000; }
+.btn-vk { padding:12px 25px; border-radius:6px; font-weight:bold; color:#fff; background:#4C75A3; transition:0.3s; }
+.btn-vk:hover { transform: scale(1.05); }
+
+.status-blocks { display:flex; justify-content:center; gap:30px; margin-top:30px; flex-wrap:wrap; }
+#server-info, #discord-info { background: rgba(0,0,0,0.7); padding:20px; border-radius:12px; color:#fff; text-align:center; box-shadow:0 0 15px rgba(0,0,0,0.5); min-width:220px; }
+#server-info h3, #discord-info h3 { margin-bottom:10px; font-size:20px; }
+#server-info p, #discord-info p { margin:5px 0; font-size:16px; }
+#server-info .status { font-weight:bold; }
+#toggle-players { margin-top:10px; padding:5px 10px; cursor:pointer; border:none; border-radius:5px; background:#555; color:#fff; font-weight:bold; }
+#player-list { max-height:0; overflow:hidden; transition:max-height 0.5s ease; margin-top:10px; padding-left:0; list-style:none; }
+#player-list li { padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.2); }
+#online-chart { margin-top:15px; background: rgba(0,0,0,0.6); border-radius:10px; padding:10px; }
+
+#discord-info { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; }
+#discord-info p { font-size:18px; margin-bottom:15px; line-height:1.5; }
+#discord-info a { display:block; margin-top:20px; padding:12px 25px; background:#7289DA; color:#fff; border-radius:8px; font-weight:bold; text-align:center; width:fit-content; transition:0.3s; }
+#discord-info a:hover { transform: scale(1.05); }
+
+#about-craftopia { position:relative; background: rgba(0,0,0,0.6); padding:100px 50px; margin:50px 0; border-radius:15px; box-shadow:0 0 30px rgba(0,0,0,0.7); text-align:center; overflow:hidden; opacity:0; transform: translateY(50px); transition: all 1s ease; }
+#about-craftopia p { position:relative; z-index:1; font-size:22px; line-height:1.6; max-width:900px; margin:0 auto; text-shadow:2px 2px 10px #000; }
+#about-craftopia img { position:relative; z-index:1; width:250px; margin-top:30px; transition: transform 0.3s ease; cursor:pointer; }
+
+#faq { padding:50px; opacity:0; transform: translateY(50px); transition: all 1s ease; }
+#faq h2 { margin-bottom:30px; text-align:center; }
+.faq-item { margin-bottom:15px; cursor:pointer; overflow:hidden; border-radius:5px; transition: all 0.3s ease; }
+.faq-item h3 { margin:0; font-size:18px; padding:10px; background:rgba(0,0,0,0.6); color:#fff; }
+.faq-item p { max-height:0; opacity:0; padding:0 10px; background:rgba(0,0,0,0.4); color:#fff; transition: all 0.5s ease; margin:0; }
+.faq-item.open p { max-height:200px; opacity:1; padding:10px; }
+
+#events { display:flex; justify-content:center; align-items:center; gap:30px; padding:50px; background: rgba(0,0,0,0.6); border-radius:15px; margin:50px; color:#fff; }
+#events img { max-width:100%; border-radius:10px; }
+
+#news { padding:50px; display:flex; justify-content:center; align-items:center; gap:20px; overflow:hidden; background: rgba(0,0,0,0.6); border-radius:15px; margin:50px; }
+.news-slide { min-width:300px; transition: transform 0.5s ease; border-radius:10px; overflow:hidden; }
+.news-slide img { width:100%; display:block; }
+
+footer { text-align:center; padding:30px; background:rgba(0,0,0,0.7); color:#fff; opacity:0; transform: translateY(50px); transition: all 1s ease; }
+
+#dust-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Craftoria</div>
+  <nav><ul><li><a href="index.html">Главная</a></li></ul></nav>
+</header>
+
+<section id="hero">
+  <div class="hero-content">
+    <h1>Добро пожаловать в Craftoria</h1>
+    <p>Дружелюбный Vanilla Minecraft сервер для строительства, исследований и общения.</p>
+    <div style="margin-top:30px; display:flex; justify-content:center; gap:20px; flex-wrap:wrap; align-items:center;">
+      <a href="https://vk.com/club232951937" target="_blank" class="btn-vk">ВК Группа</a>
+    </div>
+
+    <div class="status-blocks">
+      <div id="server-info">
+        <h3>Minecraft Сервер</h3>
+        <p id="online-players">Игроки онлайн: Загрузка...</p>
+        <p id="server-status" class="status">Статус: Загрузка...</p>
+        <button id="toggle-players">Показать игроков</button>
+        <ul id="player-list"></ul>
+        <canvas id="online-chart" width="300" height="150"></canvas>
+      </div>
+
+      <div id="discord-info">
+        <h3>Discord</h3>
+        <p id="discord-stats">Загрузка данных Discord...</p>
+        <a href="https://discord.gg/eWdsA2Md" target="_blank">Подключиться к Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="events">
+  <div style="flex:1; text-align:center;">
+    <h2 id="event-title">Название события</h2>
+    <p id="event-description">Описание события: Например, старт нового квеста на сервере Craftoria!</p>
+    <p id="event-timer">До начала события: Загрузка...</p>
+  </div>
+  <div style="flex:1; text-align:center;">
+    <img id="event-img" src="event.png" alt="Событие">
+  </div>
+</section>
+
+<section id="about-craftopia">
+  <canvas id="dust-canvas"></canvas>
+  <p>Craftoria — это уникальный мир Minecraft, где каждый игрок может строить, исследовать и создавать собственные приключения. Дружелюбное сообщество и интересные события ждут каждого!</p>
+  <img id="fox-img" src="fox.png" alt="Лиса из Minecraft">
+</section>
+
+<section id="faq">
+  <h2>Вопросы о сервере</h2>
+  <div class="faq-item"><h3>1. Какая версия Minecraft используется?</h3><p>Версия Minecraft 1.21</p></div>
+  <div class="faq-item"><h3>2. Можно ли играть с Bedrock версии?</h3><p>Увы, но нельзя :(</p></div>
+  <div class="faq-item"><h3>3. Сервер Лицензионный?</h3><p>Нет, играть на нашем сервере вы сможете без наличия лицензии.</p></div>
+  <div class="faq-item"><h3>4. На сервере есть ли голосовой чат?</h3><p>Да, есть. За голосовой чат отвечает мод PlasmoVoice, который уже находится в наших модпаках.</p></div>
+  <div class="faq-item"><h3>5. Как попасть на сервер?</h3><p>Можно купить проходку или попытать удачу и оставить заявку по форме в группе ВК и ждать.</p></div>
+</section>
+
+<section id="news">
+  <div class="news-slide"><img src="news1.png" alt="Новость 1"></div>
+  <div class="news-slide"><img src="news2.png" alt="Новость 2"></div>
+  <div class="news-slide"><img src="news3.png" alt="Новость 3"></div>
+</section>
+
+<footer>
+  <p>&copy; 2025 Craftoria. Все права защищены.</p>
+</footer>
+
+<script>
+// FAQ раскрытие
+document.querySelectorAll('.faq-item').forEach(item=>item.addEventListener('click',()=>item.classList.toggle('open')));
+
+// Появление блоков
+const faders = document.querySelectorAll('.hero-content,#about-craftopia,#faq,footer');
+const observer = new IntersectionObserver((entries,obs)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.style.opacity=1; e.target.style.transform='translateY(0)'; obs.unobserve(e.target); } });
+},{threshold:0.2});
+faders.forEach(f=>observer.observe(f));
+
+// Лиса параллакс
+const fox = document.getElementById('fox-img');
+document.addEventListener('mousemove', e=>{ fox.style.transform=`translate(${(window.innerWidth/2-e.clientX)/50}px, ${(window.innerHeight/2-e.clientY)/50}px) scale(1.1)`; });
+
+// Canvas пыль
+const c = document.getElementById('dust-canvas'); const ctx = c.getContext('2d');
+function resize(){ c.width=c.offsetWidth; c.height=c.offsetHeight; } window.addEventListener('resize',resize); resize();
+let particles=[]; for(let i=0;i<100;i++)particles.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*2+1,d:Math.random()*1});
+let angle=0; function draw(){ ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.beginPath(); particles.forEach(p=>{ ctx.moveTo(p.x,p.y); ctx.arc(p.x,p.y,p.r,0,Math.PI*2,true); }); ctx.fill(); updateParticles(); } 
+function updateParticles(){ angle+=0.01; particles.forEach((p,i)=>{ p.y+=Math.cos(angle+p.d)+1+p.r/2; p.x+=Math.sin(angle)*2; if(p.x>c.width+5||p.x<-5||p.y>c.height){ particles[i]=i%3>0?{x:Math.random()*c.width,y:-10,r:p.r,d:p.d}:{x:(Math.sin(angle)>0?-5:c.width+5),y:Math.random()*c.height,r:p.r,d:p.d}; } }); } 
+function anim(){ draw(); requestAnimationFrame(anim); } anim();
+
+// Событие таймер
+const eventDate = new Date('2025-10-15T21:00:00');
+const eventTitle = "Открытие Сервера CRAFTORIA";
+const eventDescription = "Старт нового квеста на сервере!";
+document.getElementById('event-title').innerText = eventTitle;
+document.getElementById('event-description').innerText = eventDescription;
+function updateEventTimer(){
+    const now = new Date();
+    const diff = eventDate - now;
+    if(diff <= 0){ document.getElementById('event-timer').innerText = "Событие уже идет!"; return; }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff / 3600000) % 24);
+    const m = Math.floor((diff / 60000) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    document.getElementById('event-timer').innerText = `До начала события: ${d}д ${h}ч ${m}м ${s}с`;
+}
+setInterval(updateEventTimer, 1000);
+updateEventTimer();
+
+// Discord статистика
+async function updateDiscord(){
+  try{
+    const res = await fetch('https://discord.com/api/guilds/1419123058479726642/widget.json');
+    const data = await res.json();
+    document.getElementById('discord-stats').innerText = `Онлайн: ${data.presence_count}\nВсего: ${data.members.length}`;
+  } catch(e){ console.error(e); document.getElementById('discord-stats').innerText = 'Ошибка'; }
+}
+updateDiscord(); setInterval(updateDiscord, 60000);
+
+// Minecraft сервер + график
+const playerList=document.getElementById('player-list'); 
+const toggle=document.getElementById('toggle-players');
+toggle.addEventListener('click',()=>{ playerList.style.maxHeight=playerList.style.maxHeight&&playerList.style.maxHeight!=='0px'?'0px':playerList.scrollHeight+'px'; });
+const ctxChart=document.getElementById('online-chart').getContext('2d');
+const chartData={labels:[],datasets:[{label:'Онлайн игроков',data:[],borderColor:'lime',backgroundColor:'rgba(0,255,0,0.2)',tension:0.4}]};
+const chart=new Chart(ctxChart,{type:'line',data:chartData,options:{responsive:true,scales:{y:{beginAtZero:true}},plugins:{legend:{display:false}}}});
+
+async function getServer(){ 
+  try{ 
+    const res=await fetch('https://api.mcsrvstat.us/2/donator42.gamely.pro:20109'); 
+    const data=await res.json(); 
+    let online=0; 
+    if(data.online){ 
+      online=data.players.online; 
+      document.getElementById('online-players').innerText=`Игроки онлайн: ${data.players.online}/${data.players.max}`;
+      document.getElementById('server-status').innerText='Статус: Онлайн';
+      playerList.innerHTML=''; 
+      data.players.list?.forEach(p=>{ const li=document.createElement('li'); li.textContent=p; playerList.appendChild(li); }); 
+    } else { 
+      document.getElementById('online-players').innerText='Сервер оффлайн'; 
+      document.getElementById('server-status').innerText='Статус: Оффлайн'; 
+    }
+    const nowLabel=new Date().toLocaleTimeString();
+    chart.data.labels.push(nowLabel);
+    chart.data.datasets[0].data.push(online);
+    if(chart.data.labels.length>20){ chart.data.labels.shift(); chart.data.datasets[0].data.shift(); }
+    chart.update();
+  } catch(e){ console.error(e); }
+}
+getServer(); setInterval(getServer,30000);
+
+// Новости карусель
+const newsSlides = document.querySelectorAll('.news-slide');
+let newsIndex = 0;
+function showNews(){
+  newsSlides.forEach((s,i)=>s.style.transform=`translateX(${(i-newsIndex)*100}%)`);
+  newsIndex = (newsIndex + 1) % newsSlides.length;
+}
+setInterval(showNews,3000);
+showNews();
+</script>
+
+</body>
+</html>
